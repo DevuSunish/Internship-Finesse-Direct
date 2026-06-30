@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Devu's Internship Experience — A cinematic four-week journey of learning, automation, AI, and amazing people." />
+  <title>Devu — Internship Experience</title>
+
+  <!-- ── Google Fonts ── -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <!-- ── GSAP ── -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/MotionPathPlugin.min.js"></script>
+
+  <!-- ── Lenis Smooth Scroll ── -->
+  <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+
+  <!-- ── SplitType ── -->
+  <script src="https://unpkg.com/split-type@0.3.4/umd/index.min.js"></script>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ════════ GRAIN OVERLAY ════════ -->
+  <div class="grain" aria-hidden="true"></div>
+
+  <!-- ════════ CUSTOM CURSOR ════════ -->
+  <div id="cur-dot"  aria-hidden="true"></div>
+  <div id="cur-ring" aria-hidden="true"></div>
+
+  <!-- ════════ RIPPLE CANVAS ════════ -->
+  <canvas id="ripple-canvas" aria-hidden="true"></canvas>
+
+  <!-- ════════════════════════════════════
+       LOADER
+  ════════════════════════════════════ -->
+  <div id="loader" role="status" aria-label="Loading">
+    <!-- SVG morphing loader: thick bar → letter D -->
+    <div id="ld-wrapper">
+      <svg id="ld-svg"
+        viewBox="-220 -160 440 320"
+        width="440" height="320"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true">
+        <defs>
+          <!-- Glow filter applied once D is formed -->
+          <filter id="d-glow" x="-40%" y="-40%" width="180%" height="180%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="b"/>
+            <feMerge>
+              <feMergeNode in="b"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+          <!-- Clip mask: slides from left to reveal the bar fill -->
+          <clipPath id="fill-clip">
+            <rect id="fill-rect" x="-220" y="-160" width="0" height="320"/>
+          </clipPath>
+        </defs>
+
+        <!-- Faint track behind the bar -->
+        <rect id="bar-track"
+          x="-150" y="-3" width="300" height="6"
+          fill="rgba(255,255,255,0.07)" rx="3"/>
+
+        <!-- The morphing shape: starts as thick bar, morphs to D -->
+        <!-- Both paths share identical command structure: M + 4C + Z (26 numbers) -->
+        <path id="morph-path"
+          d="M -150,-14 C -50,-14 50,-14 150,-14 C 150,-14 150,14 150,14 C 50,14 -50,14 -150,14 C -150,14 -150,-14 -150,-14 Z"
+          fill="white"
+          clip-path="url(#fill-clip)"/>
+      </svg>
+      <div id="ld-count" aria-live="polite">00</div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════
+       MAIN SITE  (invisible until loader done)
+  ════════════════════════════════════ -->
+  <div id="site">
+
+    <!-- ── NAV ── -->
+    <nav id="nav" aria-label="Main navigation">
+      <a href="#hero" class="nav-brand">Devu</a>
+      <div class="nav-links">
+        <a href="#story"    class="nav-link">Story</a>
+        <a href="#journey"  class="nav-link">Journey</a>
+        <a href="#skills"   class="nav-link">Skills</a>
+        <a href="#thanks"   class="nav-link">Thanks</a>
+      </div>
+    </nav>
+
+    <!-- ══════════════════════════
+         HERO
+    ══════════════════════════ -->
+    <section id="hero" aria-labelledby="hero-h1">
+      <!-- Cinematic Memory Background -->
+      <div class="hero-mem-bg" id="hero-mem-bg" aria-hidden="true">
+        <img src="my.jpg" alt="Memory Background" />
+        <div class="hero-mem-overlay"></div>
+      </div>
+
+      <!-- Large ghost text behind -->
+      <span class="hero-ghost" aria-hidden="true">04</span>
+
+      <div class="hero-center">
+        <p class="hero-eyebrow">— Internship Experience —</p>
+
+        <h1 id="hero-h1" class="hero-h1">
+          <span class="h1-line"><span class="h1-inner">The</span></span>
+          <span class="h1-line h1-line--em"><em class="h1-inner">Journey</em></span>
+          <span class="h1-line h1-line--light"><span class="h1-inner">of Learning</span></span>
+        </h1>
+
+        <p class="hero-sub">
+          Four Weeks.&ensp;&ensp;Countless Learnings.&ensp;&ensp;One Amazing Journey.
+        </p>
+      </div>
+
+      <!-- Scroll hint -->
+      <div class="scroll-hint" aria-hidden="true">
+        <span class="scroll-label">Scroll</span>
+        <div class="scroll-track"><div class="scroll-thumb"></div></div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════
+         STORY
+    ══════════════════════════ -->
+    <section id="story" aria-label="My Story">
+      <div class="story-inner">
+        <!-- Premium Interactive Storytelling Card -->
+        <div class="story-premium-card">
+          <div class="story-card-body">
+            <p class="story-line">"When I first stepped into the office, <br>I didn't know how a professional workplace actually worked."</p>
+            <p class="story-line story-line--loud">I was nervous.</p>
+            <p class="story-line">"I imagined everyone would be serious, <br>strict, and always busy."</p>
+            <p class="story-line">"But within a minute of meeting <strong class="story-highlight">Allu Ma’am &amp; Maghudesh Sir</strong>— <br><span class="story-emp">my entire perspective changed."</span></p>
+            <p class="story-line">"They welcomed me with such positive energy <br>that I immediately felt at home."</p>
+            <p class="story-line">"I realized a workplace can also feel friendly."</p>
+          </div>
+        </div>
+      </div>
+    </section><!-- /#story -->
+
+    <!-- ══════════════════════════
+         QUOTE SECTION
+    ══════════════════════════ -->
+    <section id="quote-sec" aria-label="Learning quote">
+      <div class="qs-inner">
+        <p class="qs-line" id="qs-l1">EVERY STEP</p>
+        <p class="qs-line" id="qs-l2">TAUGHT SOMETHING</p>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════
+         ANIMATED LINE + IMAGE
+    ══════════════════════════ -->
+    <section id="line-sec" aria-label="Journey visualization">
+      <!-- Electric-blue animated journey line -->
+      <svg id="journey-svg"
+        viewBox="0 0 1440 800"
+        preserveAspectRatio="none"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true">
+        <defs>
+          <filter id="line-glow" x="-30%" y="-80%" width="160%" height="260%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="12" result="blurOut"/>
+            <feMerge>
+              <feMergeNode in="blurOut"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+          <!-- Thinner inner highlight for crisp center -->
+          <filter id="line-glow-sharp" x="-20%" y="-60%" width="140%" height="220%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="b"/>
+            <feMerge>
+              <feMergeNode in="b"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
+        <!-- Glow halo layer (hidden but kept in DOM to preserve JS animation logic) -->
+        <path class="j-path j-path--glow"
+          id="journey-path-glow"
+          d="M 0,300 C 60,300 80,380 160,380 C 240,380 260,250 300,200 C 340,150 380,150 400,200 C 420,250 410,350 380,400 C 350,450 290,460 250,420 C 210,380 220,300 280,280 C 340,260 420,300 500,320 C 600,345 700,260 800,240 C 900,220 980,280 1060,260 C 1140,240 1180,200 1260,210 C 1340,220 1380,280 1440,270"
+          fill="none"
+          stroke="#000000"
+          stroke-width="3.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          opacity="0"/>
+        <!-- Clean, elegant main black line -->
+        <path class="j-path j-path--main"
+          id="journey-path"
+          d="M 0,300 C 60,300 80,380 160,380 C 240,380 260,250 300,200 C 340,150 380,150 400,200 C 420,250 410,350 380,400 C 350,450 290,460 250,420 C 210,380 220,300 280,280 C 340,260 420,300 500,320 C 600,345 700,260 800,240 C 900,220 980,280 1060,260 C 1140,240 1180,200 1260,210 C 1340,220 1380,280 1440,270"
+          fill="none"
+          stroke="#000000"
+          stroke-width="3.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"/>
+      </svg>
+
+      <!-- Photograph: initially on the left, reacts when line reaches it -->
+      <div class="ls-img-wrap" id="ls-image" aria-label="Internship photograph">
+        <div class="ls-photo-frame" id="ls-frame">
+          <img src="office.jpg" alt="Internship office experience" />
+        </div>
+      </div>
+    </section><!-- /#line-sec -->
+
+    <!-- ══════════════════════════
+         THE TEAM MARQUEE
+         Hidden until image animation completes
+    ══════════════════════════ -->
+    <section id="team-sec" aria-label="The Team" class="team-hidden">
+      <div class="team-inner">
+
+        <!-- Row 1: left → right -->
+        <div class="marquee-row marquee-row--fwd" aria-hidden="true">
+          <div class="marquee-track" id="marquee-track-1">
+            <span class="marquee-item">THE TEAM&nbsp;&bull;&nbsp;</span>
+            <span class="marquee-item">THE TEAM&nbsp;&bull;&nbsp;</span>
+            <span class="marquee-item">THE TEAM&nbsp;&bull;&nbsp;</span>
+            <span class="marquee-item">THE TEAM&nbsp;&bull;&nbsp;</span>
+            <span class="marquee-item">THE TEAM&nbsp;&bull;&nbsp;</span>
+            <span class="marquee-item">THE TEAM&nbsp;&bull;&nbsp;</span>
+            <span class="marquee-item">THE TEAM&nbsp;&bull;&nbsp;</span>
+            <!-- seamless duplicate -->
+            <span class="marquee-item" aria-hidden="true">THE TEAM&nbsp;&bull;&nbsp;</span>
+            <span class="marquee-item" aria-hidden="true">THE TEAM&nbsp;&bull;&nbsp;</span>
+            <span class="marquee-item" aria-hidden="true">THE TEAM&nbsp;&bull;&nbsp;</span>
+            <span class="marquee-item" aria-hidden="true">THE TEAM&nbsp;&bull;&nbsp;</span>
+            <span class="marquee-item" aria-hidden="true">THE TEAM&nbsp;&bull;&nbsp;</span>
+            <span class="marquee-item" aria-hidden="true">THE TEAM&nbsp;&bull;&nbsp;</span>
+            <span class="marquee-item" aria-hidden="true">THE TEAM&nbsp;&bull;&nbsp;</span>
+          </div>
+        </div>
+
+        <!-- Row 2: right → left -->
+        <div class="marquee-row marquee-row--rev" aria-hidden="true">
+          <div class="marquee-track" id="marquee-track-2">
+            <span class="marquee-item">THE TEAM&nbsp;&bull;&nbsp;</span>
+            <span class="marquee-item">THE TEAM&nbsp;&bull;&nbsp;</span>
+            <span class="marquee-item">THE TEAM&nbsp;&bull;&nbsp;</span>
+            <span class="marquee-item">THE TEAM&nbsp;&bull;&nbsp;</span>
+            <span class="marquee-item">THE TEAM&nbsp;&bull;&nbsp;</span>
+            <span class="marquee-item">THE TEAM&nbsp;&bull;&nbsp;</span>
+            <span class="marquee-item">THE TEAM&nbsp;&bull;&nbsp;</span>
+            <!-- seamless duplicate -->
+            <span class="marquee-item" aria-hidden="true">THE TEAM&nbsp;&bull;&nbsp;</span>
+            <span class="marquee-item" aria-hidden="true">THE TEAM&nbsp;&bull;&nbsp;</span>
+            <span class="marquee-item" aria-hidden="true">THE TEAM&nbsp;&bull;&nbsp;</span>
+            <span class="marquee-item" aria-hidden="true">THE TEAM&nbsp;&bull;&nbsp;</span>
+            <span class="marquee-item" aria-hidden="true">THE TEAM&nbsp;&bull;&nbsp;</span>
+            <span class="marquee-item" aria-hidden="true">THE TEAM&nbsp;&bull;&nbsp;</span>
+            <span class="marquee-item" aria-hidden="true">THE TEAM&nbsp;&bull;&nbsp;</span>
+          </div>
+        </div>
+
+      </div>
+    </section><!-- /#team-sec -->
+
+    <!-- ══════════════════════════
+         JOURNEY — week cards
+    ══════════════════════════ -->
+    <section id="journey" aria-labelledby="journey-h2">
+      <header class="sec-header">
+        <span class="sec-tag" aria-hidden="true">04</span>
+        <h2 id="journey-h2" class="sec-h2">
+          Four Weeks.<br><em>Four Chapters.</em>
+        </h2>
+      </header>
+
+      <div class="week-grid" role="list">
+        <button class="wk-card" data-week="1" role="listitem" aria-haspopup="dialog" aria-label="Open Week 1 details — Automation Anywhere Begins">
+          <span class="wk-num">01</span>
+          <h3 class="wk-h3">Week One</h3>
+          <p class="wk-sub">Automation Anywhere Begins</p>
+          <span class="wk-arrow" aria-hidden="true">→</span>
+        </button>
+
+        <button class="wk-card" data-week="2" role="listitem" aria-haspopup="dialog" aria-label="Open Week 2 details — Task Bots &amp; RPA Challenge">
+          <span class="wk-num">02</span>
+          <h3 class="wk-h3">Week Two</h3>
+          <p class="wk-sub">Task Bots &amp; RPA Challenge</p>
+          <span class="wk-arrow" aria-hidden="true">→</span>
+        </button>
+
+        <button class="wk-card" data-week="3" role="listitem" aria-haspopup="dialog" aria-label="Open Week 3 details — UiPath Academy &amp; Agentic Automation">
+          <span class="wk-num">03</span>
+          <h3 class="wk-h3">Week Three</h3>
+          <p class="wk-sub">UiPath Academy &amp; Agentic Automation</p>
+          <span class="wk-arrow" aria-hidden="true">→</span>
+        </button>
+
+        <button class="wk-card" data-week="4" role="listitem" aria-haspopup="dialog" aria-label="Open Week 4 details — Final Presentations">
+          <span class="wk-num">04</span>
+          <h3 class="wk-h3">Week Four</h3>
+          <p class="wk-sub">Final Presentations</p>
+          <span class="wk-arrow" aria-hidden="true">→</span>
+        </button>
+      </div>
+    </section>
+
+
+    <!-- ════ WEEK MODALS ════ -->
+    <div id="wk-modal" role="dialog" aria-modal="true" aria-hidden="true">
+      <button id="modal-close-btn" aria-label="Close modal">✕</button>
+
+      <!-- Week 1 -->
+      <div class="wk-modal-pane" id="wm-1" aria-labelledby="wm-1-title">
+        <div class="wm-meta">
+          <span class="wm-num" aria-hidden="true">01</span>
+          <h2 id="wm-1-title" class="wm-h2">Week One</h2>
+          <p class="wm-theme">Week 1 : Automation Anywhere Begins</p>
+        </div>
+        <ul class="wm-list">
+          <li class="wm-focus"><strong>Focus:</strong> Automation Developer Career Quest — Start Phase</li>
+          <li><strong>Modules Cleared:</strong></li>
+          <li class="wm-bullet">Intro to the Career Quest</li>
+          <li class="wm-bullet">Environment Setup</li>
+          <li class="wm-bullet">First Automation</li>
+          <li class="wm-bullet">Browser Package</li>
+          <li class="wm-bullet">Recorder Package</li>
+          <li class="wm-bullet">Variables</li>
+          <li class="wm-bullet">CSV / TXT Package</li>
+          <li class="wm-bullet">Loop Package</li>
+          <li class="wm-bullet">Folder Package</li>
+          <li class="wm-bullet">Record Variable</li>
+          <li class="wm-bullet">Shopping List Challenge</li>
+          <li class="wm-bullet">Log to File</li>
+          <li class="wm-bullet">Error Handling</li>
+          <li class="wm-bullet">Steps Package</li>
+        </ul>
+      </div>
+
+      <!-- Week 2 -->
+      <div class="wk-modal-pane" id="wm-2" aria-labelledby="wm-2-title">
+        <div class="wm-meta">
+          <span class="wm-num" aria-hidden="true">02</span>
+          <h2 id="wm-2-title" class="wm-h2">Week Two</h2>
+          <p class="wm-theme">Week 2 : Task Bots &amp; The RPA Challenge</p>
+        </div>
+        <ul class="wm-list">
+          <li class="wm-focus"><strong>Focus:</strong> Real-world use cases on Automation Anywhere</li>
+          <li>
+            <strong>Project - Excel Data Bot:</strong>
+            <ul style="list-style:none; padding-left:16px; margin-top:8px; display:flex; flex-direction:column; gap:8px;">
+              <li class="wm-bullet">Reads usernames from Excel</li>
+              <li class="wm-bullet">Logs into WB Excise Portal</li>
+              <li class="wm-bullet">Extracts data</li>
+              <li class="wm-bullet">Writes results back to Excel</li>
+            </ul>
+          </li>
+          <li>
+            <strong>The RPA Challenge:</strong>
+            <ul style="list-style:none; padding-left:16px; margin-top:8px; display:flex; flex-direction:column; gap:8px;">
+              <li class="wm-bullet">Completed challenge using workaround setup</li>
+              <li class="wm-bullet">Side-by-side debugging process</li>
+            </ul>
+          </li>
+          <li class="wm-highlight">
+            <strong>Achievement:</strong>
+            <ul style="list-style:none; padding-left:16px; margin-top:8px; display:flex; flex-direction:column; gap:8px;">
+              <li class="wm-bullet">Passed Automation Anywhere Essential Certification</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Week 3 -->
+      <div class="wk-modal-pane" id="wm-3" aria-labelledby="wm-3-title">
+        <div class="wm-meta">
+          <span class="wm-num" aria-hidden="true">03</span>
+          <h2 id="wm-3-title" class="wm-h2">Week Three</h2>
+          <p class="wm-theme">Week 3 : UiPath Academy &amp; Agentic Automation</p>
+        </div>
+        <ul class="wm-list">
+          <li class="wm-focus"><strong>Focus:</strong> UiPath Studio Web + Agentic Automation Training</li>
+          <li><strong>Modules Cleared:</strong></li>
+          <li class="wm-bullet">Build your first agent with Studio Web</li>
+          <li class="wm-bullet">Agentic prompt engineering</li>
+          <li class="wm-bullet">Context &amp; escalation setup</li>
+          <li class="wm-bullet">Evaluation methods (LLM-as-Judge, Exact Match, JSON Similarity)</li>
+          <li class="wm-bullet">UiPath Maestro orchestration</li>
+          <li><strong>Projects:</strong></li>
+          <li class="wm-project"><strong>Customer Email Processing Agent:</strong><br/>→ sentiment analysis, intent classification, routing, response generation</li>
+          <li class="wm-project"><strong>Thyroid Detection OCR Bot:</strong><br/>→ Python, pytesseract, fitz, regex-based medical report classification</li>
+          <li class="wm-project"><strong>Report Translation Bot:</strong><br/>→ Spanish ↔ French translation automation</li>
+        </ul>
+      </div>
+
+      <!-- Week 4 -->
+      <div class="wk-modal-pane" id="wm-4" aria-labelledby="wm-4-title">
+        <div class="wm-meta">
+          <span class="wm-num" aria-hidden="true">04</span>
+          <h2 id="wm-4-title" class="wm-h2">Week Four</h2>
+          <p class="wm-theme">Week 4 : Final Presentations</p>
+        </div>
+        <ul class="wm-list">
+          <li class="wm-focus"><strong>Focus:</strong> Final UiPath use cases + agentic systems understanding</li>
+          <li>
+            <strong>ML Basics:</strong>
+            <ul style="list-style:none; padding-left:16px; margin-top:8px; display:flex; flex-direction:column; gap:8px;">
+              <li class="wm-bullet">Iris dataset exploration</li>
+              <li class="wm-bullet">K-Means Clustering</li>
+              <li class="wm-bullet">KNN Classification</li>
+              <li class="wm-bullet">Correlation Heatmap</li>
+              <li class="wm-bullet">Elbow Method</li>
+              <li class="wm-bullet">Data visualization</li>
+            </ul>
+          </li>
+          <li class="wm-highlight"><strong>Final Presentation:</strong><br/>Autonomous Medical Coding Agent</li>
+          <li><strong>Colleague Projects:</strong></li>
+          <li class="wm-bullet">IT Service Desk Agent</li>
+          <li class="wm-bullet">Medical Coding Agent</li>
+          <li class="wm-bullet">Legal Contract Negotiation Agent</li>
+          <li class="wm-bullet">Insurance Claims Investigation Agent</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- ══════════════════════════
+         SKILLS
+    ══════════════════════════ -->
+    <section id="skills" aria-labelledby="skills-h2">
+      <div class="skills-head-wrap">
+        <header class="sec-header">
+          <span class="sec-tag" aria-hidden="true">mastered</span>
+          <h2 id="skills-h2" class="sec-h2">
+            What I<br><em>Mastered</em>
+          </h2>
+        </header>
+      </div>
+
+      <div class="skill-rows" role="list">
+        <div class="sk-row" data-filled="true"  role="listitem">
+          <span class="sk-text">Agentic AI</span>
+          <span class="sk-num" aria-hidden="true">01</span>
+        </div>
+        <div class="sk-row" data-filled="false" role="listitem">
+          <span class="sk-text">Automation Anywhere</span>
+          <span class="sk-num" aria-hidden="true">02</span>
+        </div>
+        <div class="sk-row" data-filled="true"  role="listitem">
+          <span class="sk-text">UiPath Studio</span>
+          <span class="sk-num" aria-hidden="true">03</span>
+        </div>
+        <div class="sk-row" data-filled="false" role="listitem">
+          <span class="sk-text">Problem Solving</span>
+          <span class="sk-num" aria-hidden="true">04</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════
+         THANK YOU
+    ══════════════════════════ -->
+    <section id="thanks" aria-labelledby="ty-h2">
+      <div class="ty-inner">
+        <h2 id="ty-h2" class="ty-h2">
+          Thank<br><em>You.</em>
+        </h2>
+
+        <div class="ty-copy" role="region" aria-label="Closing message">
+          <p class="ty-p">This internship was more than learning tools.</p>
+          <p class="ty-p">It gave me confidence,</p>
+          <p class="ty-p">technical skills,</p>
+          <p class="ty-p">and unforgettable memories.</p>
+        </div>
+
+        <div class="ty-credits">
+          <p class="ty-credits-label">Special Thanks</p>
+          <div class="ty-names" aria-label="Acknowledgements">
+            <span class="ty-name">Allu Ma’am</span>
+            <span class="ty-sep" aria-hidden="true">·</span>
+            <span class="ty-name">Maghudesh Sir</span>
+            <span class="ty-sep" aria-hidden="true">·</span>
+            <span class="ty-name">Manasa Ma'am</span>
+          </div>
+        </div>
+
+        <div class="ty-action-wrap">
+          <button id="view-thanks-btn" class="view-thanks-btn">View Special Thank You</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════
+         FOOTER
+    ══════════════════════════ -->
+    <footer id="footer" aria-label="Site footer">
+      <div class="footer-inner">
+        <span>© <span id="footer-year">2026</span> Devu</span>
+        <span class="footer-sep" aria-hidden="true">—</span>
+        <span class="footer-tag">An Internship Remembered</span>
+      </div>
+    </footer>
+
+  </div><!-- /#site -->
+
+  <!-- ══════════════════════════
+       THANK YOU OVERLAY
+  ══════════════════════════ -->
+  <div id="thank-you-overlay" aria-hidden="true">
+    <!-- Close button to return to the site -->
+    <button id="overlay-close-btn" aria-label="Close thank you overlay">✕</button>
+
+    <!-- Scrollable container inside the overlay -->
+    <div class="overlay-scroll-container">
+      <!-- Pinned animation container -->
+      <div class="overlay-pin-section">
+        <!-- Single image element -->
+        <div class="overlay-img-wrap" id="overlay-img-wrap">
+          <img src="manasa.jpg" alt="Manasa Ma'am" class="overlay-photo" />
+        </div>
+
+        <!-- Text container on the left, shown only after image moves to the right -->
+        <div class="overlay-text-col" id="overlay-text-col">
+          <h2 class="overlay-title overlay-line">A Special Thank You</h2>
+          <div class="overlay-body">
+            <p class="overlay-line">A heartfelt thank you to <strong class="overlay-bold">Manasa Ma'am</strong> for making this internship such a wonderful experience.</p>
+            <p class="overlay-line">You never felt like a mentor—you felt more like a supportive college senior.</p>
+            <p class="overlay-line">Every concept was explained so clearly, and your guidance helped me understand and solve many real-world use cases with confidence.</p>
+            <p class="overlay-line">Beyond the learning, the fun conversations and positive vibe made every day enjoyable and memorable.</p>
+            <p class="overlay-line">And of course, a special thanks for the <strong class="overlay-bold">best homemade noodles</strong>—they'll always be one of my favorite memories from this internship!</p>
+            <p class="overlay-line">Thank you for your guidance, patience, and encouragement. I'll always be grateful for this amazing journey.</p>
+          </div>
+        </div>
+      </div>
+      <!-- Spacer to allow scroll length within the scroll container -->
+      <div class="overlay-scroll-spacer"></div>
+    </div>
+  </div>
+
+  <!-- Screen-reader only utility class -->
+  <style>.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}</style>
+
+  <script src="script.js?v=35"></script>
+</body>
+</html>

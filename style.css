@@ -1,0 +1,1351 @@
+/* ══════════════════════════════════════════════════════════
+   CINEMATIC INTERNSHIP PORTFOLIO — style.css
+   Theme  : Black (#000) & White (#fff) only
+   Fonts  : Cormorant Garamond (display) + Space Grotesk (UI)
+   ══════════════════════════════════════════════════════════ */
+
+/* ── 0. RESET ─────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── 1. DESIGN TOKENS ─────────────────────────────────── */
+:root {
+  --black  : #000000;
+  --white  : #ffffff;
+  --bg-color: #ffffff;
+  --text-color: #000000;
+  --fd     : 'Cormorant Garamond', Georgia, serif;
+  --fu     : 'Space Grotesk', system-ui, sans-serif;
+  --ease-o : cubic-bezier(0.33, 1, 0.68, 1);        /* out-expo */
+  --ease-i : cubic-bezier(0.64, 0, 0.78, 0);        /* in-expo  */
+  --ease-io: cubic-bezier(0.87, 0, 0.13, 1);        /* in-out   */
+}
+
+/* ── 2. BASE ──────────────────────────────────────────── */
+html { font-size: 16px; }
+
+body {
+  background: var(--black);
+  color: var(--white);
+  font-family: var(--fu);
+  font-weight: 300;
+  cursor: none;        /* hide native; replaced by custom cursor */
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 1.4s var(--ease-io), color 1.4s var(--ease-io);
+}
+
+body.has-loaded {
+  background: var(--bg-color);
+  color: var(--text-color);
+}
+
+/* Preserve cursor on touch devices */
+@media (pointer: coarse) { body { cursor: auto; } }
+
+/* ── 3. GRAIN NOISE OVERLAY ───────────────────────────── */
+.grain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 0.045;
+  /* Tiling SVG feTurbulence grain */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 220px;
+  background-repeat: repeat;
+}
+
+/* ── 4. RIPPLE CANVAS ─────────────────────────────────── */
+#ripple-canvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9990;
+  mix-blend-mode: difference;
+}
+
+/* ── 5. CUSTOM CURSOR ─────────────────────────────────── */
+#cur-dot {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  background: var(--white);
+  mix-blend-mode: difference;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 10000;
+  transform: translate(-50%, -50%);
+  will-change: transform;
+  transition: width 0.25s var(--ease-o), height 0.25s var(--ease-o);
+}
+
+#cur-ring {
+  position: fixed;
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--white);
+  mix-blend-mode: difference;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  will-change: transform;
+  transition: width 0.35s var(--ease-o),
+              height 0.35s var(--ease-o),
+              border-color 0.35s;
+}
+
+/* Hover state enlarges both elements */
+body.cursor-hover #cur-dot  { width: 14px; height: 14px; }
+body.cursor-hover #cur-ring { width: 66px; height: 66px; border-color: var(--white); }
+
+/* On touch / coarse pointer — hide custom cursor */
+@media (pointer: coarse) {
+  #cur-dot, #cur-ring, #ripple-canvas { display: none; }
+}
+
+/* ── 6. LOADER ────────────────────────────────────────── */
+#loader {
+  position: fixed;
+  inset: 0;
+  background: var(--black);
+  z-index: 20000;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+#ld-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+/* SVG scales on portal zoom — set transform-origin to its center */
+#ld-svg {
+  display: block;
+  will-change: transform;
+  transform-origin: center center;
+}
+
+/* Counter below the bar */
+#ld-count {
+  font-family: var(--fu);
+  font-size: 0.68rem;
+  font-weight: 300;
+  letter-spacing: 0.28em;
+  color: rgba(255, 255, 255, 0.32);
+  user-select: none;
+}
+
+/* ── 7. SITE WRAPPER (hidden until loader ends) ───────── */
+#site {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* ── 8. NAVIGATION ────────────────────────────────────── */
+#nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 52px;
+  z-index: 1000;
+  /* mix-blend-mode: difference makes nav always readable */
+  mix-blend-mode: difference;
+}
+
+.nav-brand {
+  font-family: var(--fd);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--white);
+  text-decoration: none;
+  letter-spacing: 0.04em;
+}
+
+.nav-links {
+  display: flex;
+  gap: 34px;
+  align-items: center;
+}
+
+.nav-link {
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.nav-link:hover { color: var(--white); }
+
+/* ── 9. HERO ──────────────────────────────────────────── */
+#hero {
+  position: relative;
+  height: 100vh;
+  min-height: 600px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 80px 40px 60px;
+  overflow: hidden;
+}
+
+/* Cinematic memory background container */
+.hero-mem-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  opacity: 0; /* starts hidden, animated by GSAP */
+  pointer-events: none;
+  background: #ffffff; /* Clean white margins if there is extra space */
+}
+
+.hero-mem-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.hero-mem-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0); /* starts fully transparent */
+  z-index: 1;
+}
+
+/* Ghost background number */
+.hero-ghost {
+  position: absolute;
+  font-family: var(--fd);
+  font-size: 42vw;
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.025);
+  line-height: 1;
+  user-select: none;
+  pointer-events: none;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  will-change: transform;
+}
+
+.hero-center { position: relative; z-index: 1; }
+
+.hero-eyebrow {
+  font-size: 0.7rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.45);
+  margin-bottom: 36px;
+  /* animated in via GSAP */
+}
+
+/* Hero H1 — each line acts as a mask container */
+.hero-h1 {
+  font-family: var(--fd);
+  font-size: clamp(3.8rem, 8.5vw, 9.5rem);
+  font-weight: 700;
+  line-height: 1.06;
+  letter-spacing: -0.025em;
+  margin-bottom: 32px;
+}
+
+.h1-line {
+  display: block;
+  overflow: hidden; /* masks the sliding inner span */
+  line-height: 1.12;
+}
+
+.h1-line--em em {
+  font-style: italic;
+  font-weight: 300;
+}
+
+.h1-line--light span {
+  font-weight: 300;
+  opacity: 0.75;
+}
+
+.h1-inner {
+  display: block;
+  /* GSAP will animate translateY from 110% to 0 */
+}
+
+.hero-sub {
+  font-size: clamp(0.75rem, 1.4vw, 0.9rem);
+  letter-spacing: 0.14em;
+  color: rgba(0, 0, 0, 0.5);
+  /* animated in via GSAP */
+}
+
+/* Scroll hint */
+.scroll-hint {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  /* animated in via GSAP */
+}
+
+.scroll-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.scroll-track {
+  width: 44px;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  position: relative;
+}
+
+.scroll-thumb {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  transform: translateX(-100%);
+  animation: scrollThumb 2.2s ease-in-out infinite 2.5s;
+}
+
+@keyframes scrollThumb {
+  0%   { transform: translateX(-100%); }
+  50%  { transform: translateX(0); }
+  100% { transform: translateX(100%); }
+}
+
+/* ── 10. STORY ────────────────────────────────────────── */
+#story {
+  padding: 120px 0 100px;
+  background: var(--bg-color);
+}
+
+.story-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+/* Header style for the Story Section */
+.story-card-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.story-card-h2 {
+  font-family: var(--fd);
+  font-size: clamp(2.5rem, 5.5vw, 4.2rem);
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--black);
+  margin-bottom: 14px;
+}
+
+.story-card-sub {
+  font-family: var(--fu);
+  font-size: clamp(0.85rem, 1.8vw, 1.05rem);
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+/* Rounded storytelling card */
+.story-premium-card {
+  background: #ffffff;
+  border: 1.5px solid var(--black);
+  border-radius: 28px;
+  padding: clamp(40px, 6vw, 80px);
+  max-width: 900px;
+  margin: 0 auto;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.01);
+  transition: transform 0.5s var(--ease-o), box-shadow 0.5s var(--ease-o);
+  will-change: transform, box-shadow;
+}
+
+.story-premium-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.07);
+}
+
+.story-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+
+/* Magazine-editorial typography within card */
+.story-line {
+  font-family: var(--fd);
+  font-size: clamp(1.2rem, 2.2vw, 1.7rem);
+  font-weight: 300;
+  line-height: 1.65;
+  color: rgba(0, 0, 0, 0.72);
+}
+
+/* Bold emphasize style */
+.story-line--loud {
+  font-size: clamp(1.7rem, 3.2vw, 2.5rem) !important;
+  font-weight: 700 !important;
+  color: var(--black) !important;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+.story-highlight {
+  font-weight: 700;
+  color: var(--black);
+}
+
+.story-emp {
+  font-style: italic;
+  color: var(--black);
+}
+
+/* ── 10b. QUOTE SECTION ───────────────────────────────── */
+#quote-sec {
+  padding: 120px 40px;
+  max-width: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+}
+
+.qs-inner {
+  text-align: center;
+}
+
+.qs-line {
+  font-family: var(--fd);
+  font-size: clamp(3.5rem, 8.5vw, 9rem);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.05;
+  color: var(--black);
+  display: block;
+  /* GSAP initial state: off-screen left, invisible */
+  opacity: 0;
+  transform: translateX(-80px) scale(0.94);
+}
+
+/* ── 10c. LINE SECTION ────────────────────────────────── */
+#line-sec {
+  position: relative;
+  height: 100vh;           /* full viewport → image truly centers when pinned */
+  min-height: 500px;
+  max-width: 100%;
+  overflow: hidden;
+  padding: 0;
+}
+
+#journey-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Both path layers start hidden; GSAP uses stroke-dashoffset */
+.j-path {
+  stroke-dashoffset: 2000; /* overridden by JS with actual length */
+  stroke-dasharray:  2000;
+}
+
+/* Image wrapper — left side, vertically centered */
+.ls-img-wrap {
+  position: absolute;
+  left: 60px;
+  top: calc(50% - 150px);
+  transform: scale(1);
+  z-index: 3;
+  will-change: transform;
+  transform-origin: center center;
+}
+
+.ls-photo-frame {
+  width: 400px;
+  height: 300px;
+  border-radius: 0;
+  filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.08));
+  overflow: visible;
+  position: relative;
+  background: transparent;
+  transition: filter 0.5s var(--ease-o);
+}
+
+/* Actual image */
+.ls-photo-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* Styled placeholder (D initial + year) */
+.ls-photo-placeholder {
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.04);
+  border: 1px solid rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Grain inside placeholder */
+.ls-photo-placeholder::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px;
+  opacity: 0.08;
+  pointer-events: none;
+}
+
+.ls-placeholder-letter {
+  font-family: var(--fd);
+  font-size: 7rem;
+  font-weight: 700;
+  color: var(--black);
+  line-height: 1;
+  opacity: 0.85;
+}
+
+.ls-placeholder-tag {
+  font-family: var(--fu);
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.32);
+  text-align: center;
+  line-height: 1.6;
+}
+
+/* ── 11. SECTION SHARED STYLES ────────────────────────── */
+section {
+  padding: 120px 52px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Story sections and new full-bleed sections override the max-width */
+#story {
+  max-width: 100%;
+  margin: 0;
+}
+#quote-sec, #line-sec, #team-sec {
+  max-width: 100%;
+  margin: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* Section header */
+.sec-header {
+  margin-bottom: 80px;
+  position: relative;
+}
+
+/* Large faded tag behind the heading */
+.sec-tag {
+  font-family: var(--fd);
+  font-size: clamp(5rem, 14vw, 14rem);
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.04);
+  line-height: 1;
+  user-select: none;
+  pointer-events: none;
+  position: absolute;
+  top: -0.1em;
+  left: -0.1em;
+  white-space: nowrap;
+}
+
+.sec-h2 {
+  font-family: var(--fd);
+  font-size: clamp(2.6rem, 5.5vw, 5.8rem);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  position: relative; /* above the ghost tag */
+}
+
+.sec-h2 em {
+  font-style: italic;
+  font-weight: 300;
+}
+
+/* ── 12. JOURNEY ──────────────────────────────────────── */
+#journey {
+  /* Override max-width to allow full grid-width */
+}
+
+.week-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  border-left: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.wk-card {
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  background: var(--white);
+  color: var(--black);
+  font-family: var(--fu);
+  text-align: left;
+  padding: 52px 40px 48px;
+  cursor: none;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.4s;
+  /* GSAP initial state */
+  opacity: 0;
+  transform: translateY(40px);
+}
+
+/* Hover underline sweep */
+.wk-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.75);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.5s var(--ease-o);
+}
+
+.wk-card:hover { background: rgba(0, 0, 0, 0.025); }
+.wk-card:hover::after { transform: scaleX(1); }
+
+.wk-num {
+  display: block;
+  font-size: 0.65rem;
+  letter-spacing: 0.22em;
+  color: rgba(0, 0, 0, 0.35);
+  margin-bottom: 52px;
+  transition: color 0.3s;
+}
+
+.wk-card:hover .wk-num { color: rgba(0, 0, 0, 0.6); }
+
+.wk-h3 {
+  font-family: var(--fd);
+  font-size: clamp(1.5rem, 2.4vw, 2.3rem);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  margin-bottom: 10px;
+}
+
+.wk-sub {
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  color: rgba(0, 0, 0, 0.45);
+  margin-bottom: 40px;
+}
+
+.wk-arrow {
+  display: inline-block;
+  font-size: 1rem;
+  color: rgba(0, 0, 0, 0.35);
+  transition: transform 0.4s var(--ease-o), color 0.3s;
+}
+
+.wk-card:hover .wk-arrow {
+  transform: translateX(8px);
+  color: var(--black);
+}
+
+/* ── 13. WEEK MODALS ──────────────────────────────────── */
+#wk-modal {
+  position: fixed;
+  inset: 0;
+  background: var(--black);   /* Inverted: black bg, white text */
+  color: var(--white);
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Clip-path controlled by GSAP */
+  clip-path: circle(0% at 50% 50%);
+  visibility: hidden;
+  will-change: clip-path;
+}
+
+#wk-modal.is-open { visibility: visible; }
+
+/* Close button */
+#modal-close-btn {
+  position: absolute;
+  top: 44px;
+  right: 52px;
+  background: none;
+  border: none;
+  font-family: var(--fu);
+  font-size: 1.3rem;
+  color: rgba(255, 255, 255, 0.55);
+  cursor: none;
+  line-height: 1;
+  transition: color 0.3s, transform 0.3s;
+  z-index: 1;
+  padding: 8px;
+}
+
+#modal-close-btn:hover { color: var(--white); transform: rotate(90deg); }
+
+/* Individual pane — hidden unless .is-active */
+.wk-modal-pane {
+  display: none;
+  max-width: 580px;
+  width: 100%;
+  padding: 0 52px;
+  max-height: 80vh;
+  box-sizing: border-box;
+}
+
+.wk-modal-pane.is-active {
+  display: flex;
+  flex-direction: column;
+}
+
+.wm-meta {
+  flex-shrink: 0;
+  margin-bottom: 32px;
+}
+
+.wm-num {
+  display: block;
+  font-size: 0.65rem;
+  letter-spacing: 0.24em;
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 16px;
+}
+
+.wm-h2 {
+  font-family: var(--fd);
+  font-size: clamp(2.8rem, 5.5vw, 5rem);
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin-bottom: 12px;
+}
+
+.wm-theme {
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* Activity list with internal scroll */
+.wm-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  overflow-y: auto;
+  flex-grow: 1;
+  padding-right: 16px;
+  padding-bottom: 24px;
+}
+
+/* Scrollbar styles for wm-list */
+.wm-list::-webkit-scrollbar {
+  width: 6px;
+}
+.wm-list::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 3px;
+}
+.wm-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+.wm-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.45);
+}
+
+.wm-list li {
+  font-size: clamp(1rem, 1.8vw, 1.25rem);
+  color: rgba(255, 255, 255, 0.75);
+  padding-left: 28px;
+  position: relative;
+  line-height: 1.5;
+  /* GSAP initial state set in JS */
+  opacity: 0;
+  transform: translateY(18px);
+}
+
+.wm-list li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: rgba(255, 255, 255, 0.3);
+}
+.wm-list li.wm-focus::before,
+.wm-list li.wm-tip::before {
+  content: none;
+}
+
+.wm-list li.wm-focus {
+  border-left: 2px solid var(--white);
+  padding-left: 16px;
+  margin-bottom: 8px;
+}
+
+.wm-list li.wm-tip {
+  border-left: 2px solid rgba(255, 255, 255, 0.4);
+  padding-left: 16px;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 8px;
+}
+
+/* Score highlight row */
+.wm-highlight {
+  font-family: var(--fd) !important;
+  font-size: clamp(1.4rem, 2.8vw, 2rem) !important;
+  font-weight: 700 !important;
+  color: var(--white) !important;
+  letter-spacing: -0.01em;
+}
+
+
+/* ── 15. SKILLS ───────────────────────────────────────── */
+#skills {
+  padding-left: 0;
+  padding-right: 0;
+  max-width: 100%; /* Full bleed */
+}
+
+.skills-head-wrap {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 52px;
+  margin-bottom: 72px;
+}
+
+.skill-rows {
+  border-top: 1px solid rgba(0, 0, 0, 0.07);
+}
+
+.sk-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 52px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+  cursor: none;
+  overflow: hidden;
+  position: relative;
+  transition: background 0.4s;
+}
+
+.sk-row::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.0);
+  transition: background 0.4s;
+}
+
+.sk-row:hover { background: rgba(0, 0, 0, 0.025); }
+
+/* Skill text — giant Cormorant */
+.sk-text {
+  font-family: var(--fd);
+  font-size: clamp(2.2rem, 5.5vw, 5.5rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.025em;
+  position: relative;
+  display: block;
+  /* GSAP initial state */
+  opacity: 0;
+  transform: translateX(-36px);
+  transition: -webkit-text-stroke 0.4s, color 0.4s;
+}
+
+/* Filled rows (data-filled="true"): solid black text */
+.sk-row[data-filled="true"] .sk-text {
+  color: var(--black);
+  -webkit-text-stroke: 0px transparent;
+}
+
+/* Outlined rows (data-filled="false"): stroke only */
+.sk-row[data-filled="false"] .sk-text {
+  -webkit-text-stroke: 1.5px rgba(0, 0, 0, 0.35);
+  color: transparent;
+}
+
+/* On hover, outlined rows become filled */
+.sk-row[data-filled="false"]:hover .sk-text {
+  -webkit-text-stroke: 1.5px rgba(0, 0, 0, 0.7);
+}
+
+.sk-num {
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: rgba(0, 0, 0, 0.35);
+  flex-shrink: 0;
+  /* GSAP initial state */
+  opacity: 0;
+}
+
+/* ── 16. THANK YOU ────────────────────────────────────── */
+#thanks {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 120px 52px;
+  max-width: 100%;
+}
+
+.ty-inner { max-width: 820px; }
+
+.ty-h2 {
+  font-family: var(--fd);
+  font-size: clamp(5.5rem, 14vw, 14rem);
+  font-weight: 700;
+  line-height: 0.92;
+  letter-spacing: -0.04em;
+  margin-bottom: 64px;
+  /* GSAP initial state */
+  opacity: 0;
+  transform: translateY(50px);
+}
+
+.ty-h2 em {
+  font-style: italic;
+  font-weight: 300;
+}
+
+/* Copy paragraphs */
+.ty-copy {
+  margin-bottom: 72px;
+}
+
+.ty-p {
+  font-family: var(--fd);
+  font-size: clamp(1.1rem, 2.6vw, 1.9rem);
+  font-weight: 300;
+  line-height: 1.85;
+  color: rgba(0, 0, 0, 0.65);
+  /* GSAP initial state */
+  opacity: 0;
+}
+
+/* Special thanks */
+.ty-credits {
+  /* GSAP initial state */
+  opacity: 0;
+}
+
+.ty-credits-label {
+  font-size: 0.68rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.4);
+  margin-bottom: 24px;
+}
+
+.ty-names {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.ty-name {
+  font-family: var(--fd);
+  font-size: clamp(1.1rem, 2.2vw, 1.75rem);
+  font-weight: 300;
+  color: rgba(0, 0, 0, 0.78);
+  letter-spacing: 0.02em;
+}
+
+.ty-sep { color: rgba(0, 0, 0, 0.18); }
+/* Button styling */
+.ty-action-wrap {
+  margin-top: 48px;
+  display: flex;
+  justify-content: center;
+  /* GSAP initial state */
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.view-thanks-btn {
+  background: var(--black);
+  color: var(--white);
+  border: none;
+  padding: 16px 36px;
+  font-family: var(--fu);
+  font-size: 0.88rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 500;
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  transition: transform 0.4s var(--ease-o), background-color 0.3s ease, box-shadow 0.4s var(--ease-o);
+  will-change: transform;
+}
+
+.view-thanks-btn:hover {
+  transform: scale(1.05);
+  background: #111111;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.14);
+}
+
+.view-thanks-btn:active {
+  transform: scale(0.98);
+}
+
+/* ── 17. FOOTER ───────────────────────────────────────── */
+#footer {
+  padding: 32px 52px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  max-width: 100%;
+}
+
+.footer-inner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.footer-inner span {
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  color: rgba(0, 0, 0, 0.35);
+}
+
+.footer-sep { color: rgba(0, 0, 0, 0.15) !important; }
+.footer-tag { font-style: italic; }
+
+/* ── 19. THE TEAM SECTION ──────────────────────────────── */
+
+/* Initially invisible — JS removes this class after image animation */
+.team-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.8s var(--ease-o), visibility 0s 0.8s;
+}
+
+/* Visible state */
+.team-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition: opacity 0.8s var(--ease-o), visibility 0s 0s;
+}
+
+#team-sec {
+  background: var(--white);
+  color: var(--black);
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 80px 0;         /* generous breathing room, no heading */
+  overflow: hidden;
+}
+
+.team-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 0;                  /* rows sit flush — gap handled by row height */
+}
+
+/* Each horizontal marquee row */
+.marquee-row {
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+}
+
+/* The scrolling track — wide enough for seamless loop */
+.marquee-track {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  white-space: nowrap;
+  /* GSAP drives the x transform — no CSS translate here */
+}
+
+/* Individual repeated text chunks */
+.marquee-item {
+  font-family: var(--fu);
+  font-size: clamp(1.8rem, 4.5vw, 4rem);
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--black);
+  padding-right: 0.5em;
+  flex-shrink: 0;
+}
+
+
+
+
+
+/* ── 18. RESPONSIVE ───────────────────────────────────── */
+@media (max-width: 1100px) {
+  .week-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+  #nav { padding: 0 28px; height: 60px; }
+  .nav-links { display: none; } /* Simplified for mobile */
+
+  section { padding: 80px 28px; }
+  .story-inner { padding: 0 28px; }
+
+  .hero-h1 { font-size: clamp(3rem, 12vw, 5rem); }
+
+  .week-grid { grid-template-columns: 1fr 1fr; }
+  .wk-card { padding: 36px 24px 32px; }
+  .wk-num { margin-bottom: 32px; }
+
+  .tl-wrap { flex-direction: column; gap: 32px; }
+  .tl-line { min-height: auto; height: 4px; width: 100%; }
+  .tl-prog { height: 100%; width: 0; top: 0; }
+
+  .sk-row { padding: 18px 28px; }
+  .sk-text { font-size: clamp(1.8rem, 8vw, 3.5rem); }
+
+  .ty-h2 { font-size: clamp(4rem, 16vw, 8rem); }
+
+  #footer { padding: 28px; }
+
+  #modal-close-btn { top: 28px; right: 28px; }
+  .wk-modal-pane { padding: 0 28px; }
+}
+
+@media (max-width: 540px) {
+  .week-grid { grid-template-columns: 1fr; }
+  .hero-h1 { font-size: clamp(2.8rem, 14vw, 4.5rem); }
+  .hero-sub { letter-spacing: 0.06em; }
+
+  .s-line { font-size: clamp(1.4rem, 6vw, 2.4rem); }
+  .s-block--loud .s-line { font-size: clamp(1.8rem, 8vw, 3.2rem); }
+
+  .ty-h2 { font-size: clamp(3.5rem, 18vw, 7rem); }
+}
+
+/* ── 20. THANK YOU OVERLAY ───────────────────────────── */
+
+#thank-you-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #FFFFFF;
+  z-index: 9999;
+  display: none;
+  opacity: 0;
+  pointer-events: auto;
+  color: var(--black);
+}
+
+#overlay-close-btn {
+  position: fixed;
+  top: 32px;
+  right: 32px;
+  background: none;
+  border: none;
+  color: var(--black);
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 10000;
+  opacity: 0.6;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+#overlay-close-btn:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.overlay-scroll-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+}
+
+.overlay-pin-section {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+}
+
+.overlay-img-wrap {
+  overflow: hidden;
+  border-radius: 18px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.12);
+  will-change: transform, opacity;
+  /* Size: prominent, portrait orientation (around 450-550px wide on desktop) */
+  width: clamp(340px, 30vw, 480px);
+  aspect-ratio: 2 / 3;
+}
+
+.overlay-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.overlay-text-col {
+  z-index: 2;
+  box-sizing: border-box;
+}
+
+.overlay-title {
+  font-family: var(--fd);
+  font-size: clamp(2.0rem, 3.8vw, 3.0rem);
+  font-weight: 700;
+  color: var(--black);
+  margin-top: 12px;
+  margin-bottom: clamp(16px, 2vw, 24px);
+  line-height: 1.2;
+}
+
+.overlay-body {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(12px, 1.5vw, 18px);
+}
+
+.overlay-body p {
+  font-family: var(--fu);
+  font-size: clamp(0.92rem, 1.6vw, 1.1rem);
+  line-height: 1.65;
+  color: rgba(0, 0, 0, 0.70);
+}
+
+.overlay-bold {
+  font-weight: 700;
+  color: var(--black);
+}
+
+.overlay-line {
+  opacity: 1;
+}
+
+.overlay-scroll-spacer {
+  display: none;
+}
+
+/* Desktop absolute positioning inside sticky area */
+@media (min-width: 992px) {
+  .overlay-img-wrap {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    visibility: visible;
+  }
+
+  .overlay-text-col {
+    position: absolute;
+    left: clamp(60px, 6vw, 120px);
+    top: 50%;
+    transform: translateY(-50%);
+    width: clamp(300px, 42vw, 540px);
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 40px 0;
+    scrollbar-width: none; /* Firefox */
+  }
+  .overlay-text-col::-webkit-scrollbar {
+    display: none; /* Safari and Chrome */
+  }
+}
+
+/* Mobile responsive styling inside sticky/scrolling area */
+@media (max-width: 991px) {
+  .overlay-pin-section {
+    position: relative;
+    height: auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 48px;
+    padding: 100px 32px;
+    box-sizing: border-box;
+  }
+
+  .overlay-img-wrap {
+    position: relative;
+    width: 260px;
+    aspect-ratio: 2 / 3;
+    flex-shrink: 0;
+  }
+
+  .overlay-text-col {
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+  }
+
+  .overlay-line {
+    opacity: 1; /* fallback for mobile */
+  }
+
+  .overlay-scroll-spacer {
+    display: none; /* no extra space needed on mobile flex flow */
+  }
+}
+
