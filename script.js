@@ -1066,7 +1066,6 @@ function initThankYouOverlay() {
       overlayTL = gsap.timeline({
         scrollTrigger: {
           trigger: '.overlay-pin-section',
-          scroller: '.overlay-scroll-container',
           start: 'top top',
           end: '+=2000',
           pin: true,
@@ -1118,9 +1117,8 @@ function initThankYouOverlay() {
 
   /* Listeners to open overlay */
   btn.addEventListener('click', () => {
-    // Pause Lenis smooth scroll
-    if (window.lenis) window.lenis.stop();
-    document.body.style.overflow = 'hidden';
+    // Record current window scroll position
+    prevScrollY = window.scrollY;
 
     // Show Overlay Container with smooth fade
     gsap.to(overlay, {
@@ -1130,6 +1128,16 @@ function initThankYouOverlay() {
       onStart() {
         overlay.style.display = 'block';
         overlay.setAttribute('aria-hidden', 'false');
+
+        // Hide main site completely so scroll runs on overlay height only
+        site.style.display = 'none';
+
+        // Reset scroll position on window
+        window.scrollTo(0, 0);
+        if (window.lenis) {
+          window.lenis.resize();
+          window.lenis.scrollTo(0, { immediate: true });
+        }
 
         // Set initial state of image and lines
         if (isDesktop) {
@@ -1183,17 +1191,19 @@ function initThankYouOverlay() {
           overlayTL = null;
         }
 
-        // Reset scroll position within the overlay
-        const scroller = document.querySelector('.overlay-scroll-container');
-        if (scroller) scroller.scrollTop = 0;
+        // Show main site container again
+        site.style.display = 'block';
+
+        // Scroll back to where user was
+        window.scrollTo(0, prevScrollY);
+        if (window.lenis) {
+          window.lenis.resize();
+          window.lenis.scrollTo(prevScrollY, { immediate: true });
+        }
 
         // Reset positions
         gsap.set(imgWrap, { opacity: 0, scale: 0.8 });
         gsap.set(lines, { opacity: 0, y: 24 });
-
-        // Resume Lenis smooth scroll
-        if (window.lenis) window.lenis.start();
-        document.body.style.overflow = '';
 
         // Restore ScrollTrigger layout parameters
         ScrollTrigger.refresh();
@@ -1201,22 +1211,19 @@ function initThankYouOverlay() {
     });
   });
 
-  /* Fallback: Mobile scroll reveal within the scroll container */
+  /* Fallback: Mobile scroll reveal */
   if (!isDesktop) {
-    const scroller = document.querySelector('.overlay-scroll-container');
-    if (scroller) {
-      scroller.addEventListener('scroll', () => {
-        if (scroller.scrollTop > 100) {
-          gsap.to(lines, {
-            opacity: 1,
-            y: 0,
-            duration: 0.6,
-            stagger: 0.25,
-            ease: 'power2.out'
-          });
-        }
-      });
-    }
+    window.addEventListener('scroll', () => {
+      if (overlay.style.display === 'block' && window.scrollY > 100) {
+        gsap.to(lines, {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          stagger: 0.25,
+          ease: 'power2.out'
+        });
+      }
+    });
   }
 }
 
