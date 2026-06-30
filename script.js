@@ -458,13 +458,7 @@ function initThankyou() {
       opacity : 1,
       duration: 0.85,
       ease    : 'power3.out'
-    }, 0.75)
-    .to('.ty-action-wrap', {
-      opacity : 1,
-      y       : 0,
-      duration: 0.85,
-      ease    : 'power3.out'
-    }, 1.0);
+    }, 0.75);
 }
 
 /* ────────────────────────────────────────────────────────────
@@ -1025,6 +1019,9 @@ function initSpecialThanks() {
   const lines = sec ? gsap.utils.toArray('#special-thanks .st-line') : null;
 
   if (!sec || !imgWrap || !lines) return;
+
+  // Make the section visible now that GSAP is initializing it inline
+  gsap.set(sec, { visibility: 'visible' });
 
   const isDesktop = window.matchMedia('(min-width: 992px)').matches;
 

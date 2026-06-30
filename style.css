@@ -1183,6 +1183,7 @@ section {
   width: 100%;
   background: #FFFFFF;
   color: var(--black);
+  visibility: hidden; /* Hide initially to prevent layout flash or premature overlapping */
 }
 
 .special-thanks-pin {
@@ -1202,6 +1203,7 @@ section {
   will-change: transform, opacity;
   width: clamp(340px, 30vw, 480px);
   aspect-ratio: 2 / 3;
+  opacity: 0; /* Hide initially */
 }
 
 .st-photo {
@@ -1245,7 +1247,7 @@ section {
 }
 
 .st-line {
-  opacity: 1;
+  opacity: 0;
 }
 
 /* Desktop absolute positioning inside pinned section */
