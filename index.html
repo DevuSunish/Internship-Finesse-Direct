@@ -512,31 +512,36 @@
     <!-- Close button to return to the site -->
     <button id="overlay-close-btn" aria-label="Close thank you overlay">✕</button>
 
-    <!-- Pinned animation container -->
-    <div class="overlay-pin-section">
-      <!-- Single image element -->
-      <div class="overlay-img-wrap" id="overlay-img-wrap">
-        <img src="manasa.jpg" alt="Manasa Ma'am" class="overlay-photo" />
-      </div>
+    <!-- Scrollable container inside the overlay -->
+    <div class="overlay-scroll-container">
+      <!-- Pinned animation container -->
+      <div class="overlay-pin-section">
+        <!-- Single image element -->
+        <div class="overlay-img-wrap" id="overlay-img-wrap">
+          <img src="manasa.jpg" alt="Manasa Ma'am" class="overlay-photo" />
+        </div>
 
-      <!-- Text container on the left, shown only after image moves to the right -->
-      <div class="overlay-text-col" id="overlay-text-col">
-        <h2 class="overlay-title overlay-line">A Special Thank You</h2>
-        <div class="overlay-body">
-          <p class="overlay-line">A heartfelt thank you to <strong class="overlay-bold">Manasa Ma'am</strong> for making this internship such a wonderful experience.</p>
-          <p class="overlay-line">You never felt like a mentor—you felt more like a supportive college senior.</p>
-          <p class="overlay-line">Every concept was explained so clearly, and your guidance helped me understand and solve many real-world use cases with confidence.</p>
-          <p class="overlay-line">Beyond the learning, the fun conversations and positive vibe made every day enjoyable and memorable.</p>
-          <p class="overlay-line">And of course, a special thanks for the <strong class="overlay-bold">best homemade noodles</strong>—they'll always be one of my favorite memories from this internship!</p>
-          <p class="overlay-line">Thank you for your guidance, patience, and encouragement. I'll always be grateful for this amazing journey.</p>
+        <!-- Text container on the left, shown only after image moves to the right -->
+        <div class="overlay-text-col" id="overlay-text-col">
+          <h2 class="overlay-title overlay-line">A Special Thank You</h2>
+          <div class="overlay-body">
+            <p class="overlay-line">A heartfelt thank you to <strong class="overlay-bold">Manasa Ma'am</strong> for making this internship such a wonderful experience.</p>
+            <p class="overlay-line">You never felt like a mentor—you felt more like a supportive college senior.</p>
+            <p class="overlay-line">Every concept was explained so clearly, and your guidance helped me understand and solve many real-world use cases with confidence.</p>
+            <p class="overlay-line">Beyond the learning, the fun conversations and positive vibe made every day enjoyable and memorable.</p>
+            <p class="overlay-line">And of course, a special thanks for the <strong class="overlay-bold">best homemade noodles</strong>—they'll always be one of my favorite memories from this internship!</p>
+            <p class="overlay-line">Thank you for your guidance, patience, and encouragement. I'll always be grateful for this amazing journey.</p>
+          </div>
         </div>
       </div>
+      <!-- Spacer to allow scroll length within the scroll container -->
+      <div class="overlay-scroll-spacer"></div>
     </div>
   </div>
 
   <!-- Screen-reader only utility class -->
   <style>.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}</style>
 
-  <script src="script.js?v=36"></script>
+  <script src="script.js?v=37"></script>
 </body>
 </html>

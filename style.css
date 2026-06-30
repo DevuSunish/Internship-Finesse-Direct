@@ -1179,11 +1179,11 @@ section {
 /* ── 20. THANK YOU OVERLAY ───────────────────────────── */
 
 #thank-you-overlay {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  min-height: 300vh;
+  width: 100vw;
+  height: 100vh;
   background: #FFFFFF;
   z-index: 9999;
   display: none;
@@ -1209,6 +1209,16 @@ section {
 #overlay-close-btn:hover {
   opacity: 1;
   transform: scale(1.1);
+}
+
+.overlay-scroll-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
 }
 
 .overlay-pin-section {
@@ -1273,7 +1283,8 @@ section {
 }
 
 .overlay-scroll-spacer {
-  display: none;
+  height: 3200px; /* provides scrolling room for the animations */
+  pointer-events: none;
 }
 
 /* Desktop absolute positioning inside sticky area */
