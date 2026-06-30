@@ -621,7 +621,7 @@ function initAfterLoader() {
   initJourney();
   initSkills();
   initThankyou();
-  initThankYouOverlay();
+  initSpecialThanks();
   initParallax();
   initQuoteSection();
   initJourneyLine();
@@ -1019,19 +1019,17 @@ function initTeamSection() {
    Desktop: Pinned scrollable animation inside fixed overlay.
    Mobile: Stacked responsive fallback scroll.
 ──────────────────────────────────────────────────────────── */
-function initThankYouOverlay() {
-  const overlay  = document.getElementById('thank-you-overlay');
-  const btn      = document.getElementById('view-thanks-btn');
-  const closeBtn = document.getElementById('overlay-close-btn');
-  const imgWrap  = document.getElementById('overlay-img-wrap');
-  const lines    = gsap.utils.toArray('#thank-you-overlay .overlay-line');
+function initSpecialThanks() {
+  const sec = document.getElementById('special-thanks');
+  const imgWrap = sec ? sec.querySelector('.st-img-wrap') : null;
+  const lines = sec ? gsap.utils.toArray('#special-thanks .st-line') : null;
 
-  if (!overlay || !btn || !closeBtn || !imgWrap) return;
+  if (!sec || !imgWrap || !lines) return;
 
   const isDesktop = window.matchMedia('(min-width: 992px)').matches;
 
   /* Helper to calculate center & right positions for desktop image positioning */
-  function calcOverlayPos() {
+  function calcSTPos() {
     const vw = window.innerWidth;
     const vh = window.innerHeight;
 
@@ -1054,176 +1052,107 @@ function initThankYouOverlay() {
     return { cx, cy, rx, ry };
   }
 
-  let overlayTL = null;
+  if (isDesktop) {
+    const p = calcSTPos();
+    gsap.set(imgWrap, {
+      position: 'absolute',
+      visibility: 'visible',
+      left: p.cx,
+      top: p.cy,
+      right: 'auto',
+      transform: 'none',
+      opacity: 0,
+      scale: 0.8,
+      rotation: 0
+    });
+    gsap.set(lines, { opacity: 0, y: 24 });
 
-  function initOverlayScrollTrigger() {
-    if (overlayTL) {
-      overlayTL.scrollTrigger.kill();
-      overlayTL.kill();
-    }
-
-    if (isDesktop) {
-      overlayTL = gsap.timeline({
-        scrollTrigger: {
-          trigger: '.overlay-pin-section',
-          scroller: '.overlay-scroll-container',
-          start: 'top top',
-          end: '+=2000',
-          pin: true,
-          pinSpacing: true,
-          scrub: 1.5,
-          onRefresh() {
-            const p = calcOverlayPos();
-            gsap.set(imgWrap, { left: p.cx, top: p.cy });
-          }
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: '#special-thanks',
+        start: 'top top',
+        end: '+=2200',
+        pin: true,
+        pinSpacing: true,
+        scrub: 1.5,
+        onRefresh() {
+          const coords = calcSTPos();
+          gsap.set(imgWrap, { left: coords.cx, top: coords.cy });
         }
-      });
+      }
+    });
 
-      // Step 4 — Scroll-based Image Movement: Center to Right
-      overlayTL.to(imgWrap, {
-        left: () => calcOverlayPos().rx,
-        top: () => calcOverlayPos().ry,
-        rotation: 1.5, // subtle tilt during motion
-        duration: 1.5,
-        ease: 'power3.inOut',
-        onComplete() {
-          // Gentle perpetual float on scroll complete
-          gsap.to(imgWrap, {
-            y: 8,
-            rotation: 0,
-            duration: 3,
-            repeat: -1,
-            yoyo: true,
-            ease: 'sine.inOut'
-          });
-        }
-      });
-
-      // Hold briefly
-      overlayTL.to({}, { duration: 0.3 });
-
-      // Step 5 — Line-by-line reveal on the left side
-      lines.forEach((line, i) => {
-        overlayTL.to(line, {
-          opacity: 1,
-          y: 0,
-          duration: 0.6,
-          ease: 'power2.out'
-        }, i === 0 ? '+=0.1' : '+=0.35');
-      });
-
-      ScrollTrigger.refresh();
-    }
-  }
-
-  /* Listeners to open overlay */
-  btn.addEventListener('click', () => {
-    // Show Overlay Container with smooth fade
-    gsap.to(overlay, {
+    // Step 2 – Image Appearance: Fade-in + slight zoom-in
+    tl.to(imgWrap, {
       opacity: 1,
-      duration: 0.6,
-      ease: 'power2.out',
-      onStart() {
-        overlay.style.display = 'block';
-        overlay.setAttribute('aria-hidden', 'false');
+      scale: 1,
+      duration: 1.0,
+      ease: 'back.out(1.4)'
+    });
 
-        // Destroy Lenis completely so it doesn't hijack wheel events inside scroller
-        if (window.lenis) {
-          window.lenis.destroy();
-          window.lenis = null;
-        }
-        document.body.style.overflow = 'hidden';
-
-        // Reset scroll position within the overlay scroller
-        const scroller = document.querySelector('.overlay-scroll-container');
-        if (scroller) scroller.scrollTop = 0;
-
-        // Set initial state of image and lines
-        if (isDesktop) {
-          const p = calcOverlayPos();
-          gsap.set(imgWrap, {
-            position: 'absolute',
-            visibility: 'visible',
-            left: p.cx,
-            top: p.cy,
-            right: 'auto',
-            transform: 'none',
-            opacity: 0,
-            scale: 0.8,
-            rotation: 0
-          });
-        } else {
-          gsap.set(imgWrap, { opacity: 0, scale: 0.8 });
-        }
-        gsap.set(lines, { opacity: 0, y: 24 });
-      },
+    // Step 3 – Image Movement: Center to Right
+    tl.to(imgWrap, {
+      left: () => calcSTPos().rx,
+      top: () => calcSTPos().ry,
+      rotation: 1.5, // subtle tilt during motion
+      duration: 1.5,
+      ease: 'power3.inOut',
       onComplete() {
-        // Step 3 — Pop image into exact center of viewport
+        // Gentle perpetual float on scroll complete
         gsap.to(imgWrap, {
-          opacity: 1,
-          scale: 1,
-          duration: 0.9,
-          ease: 'back.out(1.4)',
-          onComplete() {
-            // Initialize scroll trigger once image pop is completed
-            initOverlayScrollTrigger();
-          }
+          y: 8,
+          rotation: 0,
+          duration: 3,
+          repeat: -1,
+          yoyo: true,
+          ease: 'sine.inOut'
         });
       }
     });
-  });
 
-  /* Listeners to close overlay */
-  closeBtn.addEventListener('click', () => {
-    gsap.to(overlay, {
-      opacity: 0,
-      duration: 0.5,
-      ease: 'power2.inOut',
-      onComplete() {
-        overlay.style.display = 'none';
-        overlay.setAttribute('aria-hidden', 'true');
-        
-        // Clean up timeline and ScrollTrigger
-        if (overlayTL) {
-          overlayTL.scrollTrigger.kill();
-          overlayTL.kill();
-          overlayTL = null;
-        }
+    // Hold briefly
+    tl.to({}, { duration: 0.3 });
 
-        // Reset scroll position within the overlay
-        const scroller = document.querySelector('.overlay-scroll-container');
-        if (scroller) scroller.scrollTop = 0;
+    // Step 4 – Text Reveal (Left Side): Line-by-line reveal
+    lines.forEach((line, i) => {
+      tl.to(line, {
+        opacity: 1,
+        y: 0,
+        duration: 0.6,
+        ease: 'power2.out'
+      }, i === 0 ? '+=0.1' : '+=0.35');
+    });
 
-        // Reset positions
-        gsap.set(imgWrap, { opacity: 0, scale: 0.8 });
-        gsap.set(lines, { opacity: 0, y: 24 });
+    ScrollTrigger.refresh();
+  } else {
+    // Mobile layout: show static or simple trigger reveal when visible
+    gsap.set(imgWrap, { opacity: 0, scale: 0.8 });
+    gsap.set(lines, { opacity: 0, y: 20 });
 
-        // Restore body scroll and re-init Lenis
-        document.body.style.overflow = '';
-        initLenis();
-
-        // Restore ScrollTrigger layout parameters
-        ScrollTrigger.refresh();
+    gsap.to(imgWrap, {
+      opacity: 1,
+      scale: 1,
+      duration: 1.0,
+      ease: 'power2.out',
+      scrollTrigger: {
+        trigger: '#special-thanks',
+        start: 'top 75%',
+        toggleActions: 'play none none reverse'
       }
     });
-  });
 
-  /* Fallback: Mobile scroll reveal within the scroll container */
-  if (!isDesktop) {
-    const scroller = document.querySelector('.overlay-scroll-container');
-    if (scroller) {
-      scroller.addEventListener('scroll', () => {
-        if (scroller.scrollTop > 100) {
-          gsap.to(lines, {
-            opacity: 1,
-            y: 0,
-            duration: 0.6,
-            stagger: 0.25,
-            ease: 'power2.out'
-          });
-        }
-      });
-    }
+    gsap.to(lines, {
+      opacity: 1,
+      y: 0,
+      duration: 0.8,
+      stagger: 0.2,
+      ease: 'power2.out',
+      scrollTrigger: {
+        trigger: '.st-text-col',
+        start: 'top 75%',
+        toggleActions: 'play none none reverse'
+      }
+    });
   }
 }
 
